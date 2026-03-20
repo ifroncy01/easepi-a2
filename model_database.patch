@@ -1,0 +1,12 @@
+diff --git a/make-fnnas/fnnas-files/common-files/etc/model_database.conf b/make-fnnas/fnnas-files/common-files/etc/model_database.conf
+index 39fa2e0..0296ab8 100644
+--- a/make-fnnas/fnnas-files/common-files/etc/model_database.conf
++++ b/make-fnnas/fnnas-files/common-files/etc/model_database.conf
+@@ -258,6 +258,7 @@ r222    :LZ-K3568                                      :rk3568   :rk3568-lz-k356
+ r223    :BDKJ-One                                      :rk3568   :rk3568-bd-one.dtb                        :NA                           :u-boot.itb                          :idbloader.img                   :4GB-LPDDR4,8G-eMMC,2xSATA,NVMe,6x1Gb-Nic   :rockchip/all          :rockchip    :rk3568       :extlinux.conf   :a1303045940                                          :bdkj-bd-one         :yes
+ r224    :Station-P2                                    :rk3568   :rk3568-roc-pc.dtb                        :NA                           :NA                                  :u-boot-rockchip.bin             :2~8GB-LPDDR4,eMMC,SATA,NVMe,TF,2x1Gb-Nic   :rockchip/all          :rockchip    :rk3568       :armbianEnv.txt  :Javier                                               :station-p2          :yes
+ r225    :LZ-D3568                                      :rk3568   :rk3568-lz-d3568-v3.dtb                   :NA                           :u-boot.itb                          :idbloader.img                   :8GB-LPDDR4,128G-eMMC,TF,2x1Gb-Nic          :rockchip/all          :rockchip    :rk3568       :extlinux.conf   :MaxCrazy1101                                         :lz-d3568            :yes
++r226    :EasePi-A2                                     :rk3568   :rk3568-easepi-a2.dtb                     :NA                           :NA                                  :u-boot-rockchip.bin             :4GB-LPDDR4,32G-eMMC,wifi,nvme,2.5Gb        :rockchip/all          :rockchip    :rk3568       :armbianEnv.txt  :Ifroncy                                              :easepi-a2           :yes
+ #-------+----------------------------------------------+---------+-----------------------------------------+-----------------------------+------------------------------------+--------------------------------+-------------------------------------------+----------------------+------------+-------------+----------------+-----------------------------------------------------+--------------------+----------
+ 
+ 

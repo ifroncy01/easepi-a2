@@ -1,0 +1,501 @@
+#!/bin/bash
+#================================================================================================
+#
+# This file is licensed under the terms of the GNU General Public
+# License version 2. This program is licensed "as is" without any
+# warranty of any kind, whether express or implied.
+#
+# This file is a part of the remake fnnas
+# https://github.com/ophub/fnnas
+#
+# Description: Automatically unpack fnnas image, generate kernel/initrd, and repackage artifacts.
+# Copyright (C) 2025~ https://fnnas.com
+# Copyright (C) 2026~ https://github.com/ophub/fnnas
+#
+# Command: sudo ./rekernel
+#
+#======================================== Functions list ========================================
+#
+# error_msg      : Output error message and exit
+# mount_try      : Attempt to mount the partition multiple times
+# init_var       : Initialize variables and parse command line arguments
+# download_debs  : Download the kernel debs files
+# download_dtbs  : Download the kernel dtbs files
+# find_fnnas     : Find the source fnnas image file
+# extract_fnnas  : Copy image to tmp, setup loop device, and mount partitions
+# unmount_fnnas  : Unmount partitions and detach specific loop device
+# chroot_fnnas   : Prepare and enter chroot to generate kernel files
+# clean_tmp      : Clear temporary files
+#
+#================================ Set make environment variables ================================
+
+# Related file storage paths
+current_path="${PWD}"
+fnnas_path="${current_path}/fnnas-arm64"
+fnnas_renas_file="*.img"
+fnnas_debs="${current_path}/fnnas-debs"
+fnnas_dtbs="${current_path}/fnnas-dtbs"
+script_path="${current_path}/make-fnnas/scripts"
+make_path="${current_path}/fnnas"
+out_path="${make_path}/out"
+tmp_path="${make_path}/tmp"
+tmp_outpath="${tmp_path}/tmp_out"
+tmp_fnnas="${tmp_path}/tmp_fnnas"
+tmp_image="${tmp_path}/tmp_image"
+
+# Create necessary directories
+[[ -d "${make_path}" ]] || mkdir -p "${make_path}"
+[[ -d "${fnnas_debs}" ]] || mkdir -p "${fnnas_debs}"
+[[ -d "${fnnas_dtbs}" ]] || mkdir -p "${fnnas_dtbs}"
+
+# Set the fnnas kernel debs files download repository from github.com
+debs_repo="https://github.com/ophub/fnnas"
+# Installation of additional deb packages inside chroot(amlogic/allwinner/rockchip/none)
+debs_install="none"
+# By default, download and use dtbs files(true/yes)
+dtbs_install="true"
+# Set kernel dtbs version(e.g., 6.12.y)
+dtbs_version="6.12.y"
+
+# Server information
+arch_info="$(uname -m)"
+# QEMU BINARY (Static binary for ARM64 emulation)
+qemu_binary_arm64="qemu-aarch64-static"
+# Kernel version output file (passed from chroot to host)
+kernel_version_output="var/tmp/kernel_version_output"
+
+# Set font colors for output
+STEPS="[\033[95m STEPS \033[0m]"
+INFO="[\033[94m INFO \033[0m]"
+NOTE="[\033[93m NOTE \033[0m]"
+WARNING="[\033[93m WARNING \033[0m]"
+SUCCESS="[\033[92m SUCCESS \033[0m]"
+ERROR="[\033[91m ERROR \033[0m]"
+
+#================================================================================================
+
+# Output error message and exit
+error_msg() {
+    echo -e " [💔] ${ERROR} ${1}"
+    exit 1
+}
+
+# Attempt to mount a device with retries
+mount_try() {
+    local m_dev="${1}"
+    local m_target="${2}"
+
+    [[ -n "${m_dev}" && -n "${m_target}" ]] || {
+        error_msg "Mount parameter is missing: [ ${m_dev}, ${m_target} ]"
+    }
+
+    local t="1"
+    local max_try="10"
+    while [[ "${t}" -le "${max_try}" ]]; do
+        mount "${m_dev}" "${m_target}"
+        if [[ "${?}" -eq "0" ]]; then
+            break
+        else
+            sync && sleep 3
+            umount "${m_target}" 2>/dev/null
+            ((t++))
+        fi
+    done
+    [[ "${t}" -gt "${max_try}" ]] && error_msg "[ ${t} ] attempts to mount failed."
+}
+
+init_var() {
+    echo -e "${STEPS} Start Initializing Variables..."
+
+    # If it is followed by [ : ], it means that the option requires a parameter value
+    local options="r:k:e:t:"
+    local long_options="debs-repository:,kernel:,debs-install:,dtbs-install:"
+
+    parsed_args=$(getopt -o "${options}" --long "${long_options}" -- "${@}")
+    [[ ${?} -ne 0 ]] && error_msg "Parameter parsing failed."
+    eval set -- "${parsed_args}"
+
+    while true; do
+        case "${1}" in
+        -r | --debs-repository)
+            if [[ -n "${2}" ]]; then
+                debs_repo="${2}"
+                shift 2
+            else
+                error_msg "Invalid -r parameter [ ${2} ]!"
+            fi
+            ;;
+        -k | --kernel)
+            if [[ -n "${2}" ]]; then
+                dtbs_version="${2}"
+                shift 2
+            else
+                error_msg "Invalid -k parameter [ ${2} ]!"
+            fi
+            ;;
+        -e | --debs-install)
+            debs_install="${2}"
+            shift 2
+            ;;
+        -t | --dtbs-install)
+            dtbs_install="${2}"
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            [[ -n "${1}" ]] && error_msg "Invalid option [ ${1} ]!"
+            break
+            ;;
+        esac
+    done
+
+    # Adjust the custom kernel repository url format
+    [[ -z "${debs_repo}" ]] && debs_repo="ophub/fnnas"
+    [[ "${debs_repo}" =~ ^https: ]] && debs_repo="$(echo ${debs_repo} | awk -F'/' '{print $4"/"$5}')"
+    kernel_api="https://github.com/${debs_repo}"
+
+    # Identify the kernel <VERSION> and <PATCHLEVEL>, such as [ 6.12 ]
+    kernel_verpatch="$(echo ${dtbs_version} | awk -F '.' '{print $1"."$2}')"
+}
+
+download_debs() {
+    echo -e "${STEPS} Downloading kernel debs files..."
+
+    # Check if a valid platform is specified
+    if [[ ! "${debs_install}" =~ ^(amlogic|allwinner|rockchip)$ ]]; then
+        echo -e "${NOTE} Skipping kernel debs download as no valid platform specified."
+        return
+    fi
+
+    cd "${current_path}"
+
+    # Get the latest version from github releases(e.g: 6.12.41)
+    latest_version="$(
+        curl -fsSL \
+            ${kernel_api}/releases/expanded_assets/fnnas_debs |
+            grep -oP "${kernel_verpatch}\.[0-9]+(?=\.tar\.gz)" |
+            sort -urV | head -n 1
+    )"
+    [[ -n "${latest_version}" ]] || error_msg "Failed to query kernel debs version from [ ${kernel_api} ]."
+    echo -e "${INFO} Latest kernel debs version found: [ ${latest_version} ]"
+
+    # Set the debs download path
+    tmp_debs_path="$(mktemp -d)"
+    debs_down_from="https://github.com/${debs_repo}/releases/download/fnnas_debs/${latest_version}.tar.gz"
+
+    # Download the kernel debs files. If the download fails, try again 10 times.
+    echo -e "${INFO} Downloading kernel debs files from: [ ${debs_down_from} ]"
+    for t in {1..10}; do
+        curl -fsSL "${debs_down_from}" -o "${tmp_debs_path}/${latest_version}.tar.gz"
+        [[ "${?}" -eq 0 ]] && break || sleep 60
+    done
+    [[ "${?}" -eq 0 ]] || error_msg "Failed to download the kernel debs files from the github.com server."
+
+    # Extract the downloaded debs files
+    echo -e "${INFO} Extracting kernel debs files..."
+    tar -xzf "${tmp_debs_path}/${latest_version}.tar.gz" -C "${fnnas_debs}/"
+    [[ "${?}" -ne 0 ]] && error_msg "Failed to extract the kernel debs files."
+    echo -e "${INFO} Kernel debs files have been downloaded and extracted to [ ${fnnas_debs} ]"
+
+    # Cleanup temporary download directory
+    rm -rf "${tmp_debs_path}"
+}
+
+download_dtbs() {
+    echo -e "${STEPS} Downloading kernel dtbs files..."
+
+    # Check if dtbs download is enabled
+    if [[ ! "${dtbs_install}" =~ ^(true|yes)$ ]]; then
+        echo -e "${NOTE} Skipping kernel dtbs download as no valid option specified."
+        return
+    fi
+
+    # Check if sufficient dtbs files already exist
+    dtbs_num="$(find "${fnnas_dtbs}" -type f -name "*.dtb" 2>/dev/null | wc -l)"
+    if [[ -n "${dtbs_num}" && "${dtbs_num}" -ge "456" ]]; then
+        echo -e "${NOTE} Sufficient kernel dtbs files already exist (${dtbs_num} files). Skipping download."
+        return
+    fi
+
+    cd "${current_path}"
+
+    # Get the latest version from github releases(e.g: 6.12.41)
+    latest_version="$(
+        curl -fsSL \
+            https://github.com/ophub/kernel/releases/expanded_assets/kernel_stable |
+            grep -oP "${kernel_verpatch}\.[0-9]+(?=\.tar\.gz)" |
+            sort -urV | head -n 1
+    )"
+    [[ -n "${latest_version}" ]] || error_msg "Failed to query kernel dtbs version from [ https://github.com/ophub/kernel ]."
+    echo -e "${INFO} Latest kernel dtbs version found: [ ${latest_version} ]"
+
+    # Set the dtbs download path
+    tmp_dtbs_path="$(mktemp -d)"
+    mkdir -p "${tmp_dtbs_path}"/{allwinner,amlogic,rockchip}
+    dtbs_down_from="https://github.com/ophub/kernel/releases/download/kernel_stable/${latest_version}.tar.gz"
+
+    # Download the kernel dtbs files. If the download fails, try again 10 times.
+    echo -e "${INFO} Downloading kernel dtbs files from: [ ${dtbs_down_from} ]"
+    for t in {1..10}; do
+        curl -fsSL "${dtbs_down_from}" -o "${tmp_dtbs_path}/${latest_version}.tar.gz"
+        [[ "${?}" -eq 0 ]] && break || sleep 60
+    done
+    [[ "${?}" -eq 0 ]] || error_msg "Failed to download the kernel dtbs files from the github.com server."
+
+    # Extract the downloaded dtbs files
+    echo -e "${INFO} Extracting kernel dtbs files..."
+    tar -xzf "${tmp_dtbs_path}/${latest_version}.tar.gz" -C "${tmp_dtbs_path}/"
+    [[ "${?}" -ne 0 ]] && error_msg "Failed to extract the kernel dtbs files."
+    echo -e "${INFO} Kernel dtbs files have been downloaded and extracted to [ ${tmp_dtbs_path} ]"
+
+    # Extract individual platform dtbs
+    tar -xzf ${tmp_dtbs_path}/${latest_version}/dtb-amlogic-${latest_version}*.tar.gz -C "${tmp_dtbs_path}/amlogic/"
+    tar -xzf ${tmp_dtbs_path}/${latest_version}/dtb-allwinner-${latest_version}*.tar.gz -C "${tmp_dtbs_path}/allwinner/"
+    tar -xzf ${tmp_dtbs_path}/${latest_version}/dtb-rockchip-${latest_version}*.tar.gz -C "${tmp_dtbs_path}/rockchip/"
+    cp -af "${tmp_dtbs_path}"/{allwinner,amlogic,rockchip} "${fnnas_dtbs}/"
+    echo -e "${INFO} Kernel dtbs files have been organized to [ ${fnnas_dtbs} ]"
+
+    # Cleanup temporary download directory
+    rm -rf "${tmp_dtbs_path}"
+}
+
+find_fnnas() {
+    cd "${current_path}"
+    echo -e "${STEPS} Start searching for fnnas file..."
+
+    # Find whether the fnnas file exists
+    [[ -d "${fnnas_path}" ]] || error_msg "Directory not found: ${fnnas_path}"
+
+    # Find the first matching fnnas image file
+    fnnas_default_file="$(ls "${fnnas_path}"/${fnnas_renas_file} 2>/dev/null | head -n 1 | awk -F "/" '{print $NF}')"
+    if [[ -n "${fnnas_default_file}" ]]; then
+        echo -e "${INFO} fnnas file found: [ ${fnnas_default_file} ]"
+    else
+        error_msg "There is no [ ${fnnas_renas_file} ] file in the [ ${fnnas_path} ] directory."
+    fi
+}
+
+extract_fnnas() {
+    echo -e "${STEPS} Extracting fnnas files..."
+    cd "${current_path}"
+
+    # Clean and recreate temp directories
+    rm -rf "${tmp_path}"
+    mkdir -p "${tmp_outpath}"/{boot,dtb,modules,headers} "${tmp_fnnas}" "${tmp_image}"
+
+    fnnas_image_file="${tmp_image}/fnnas.img"
+    cp -f "${fnnas_path}/${fnnas_default_file}" "${fnnas_image_file}"
+
+    # Setup loop device
+    loop_old="$(losetup -P -f --show "${fnnas_image_file}")"
+    [[ -n "${loop_old}" ]] || error_msg "losetup ${fnnas_image_file} failed."
+
+    # Export loop device variable for cleanup function
+    export GLOBAL_LOOP_DEV="${loop_old}"
+    echo -e "${INFO} Image attached to loop device: ${loop_old}"
+
+    # Mount rootfs partition (p2)
+    mount_try "${loop_old}p2" "${tmp_fnnas}"
+    # Mount bootfs partition (p1)
+    mount_try "${loop_old}p1" "${tmp_fnnas}/boot"
+}
+
+unmount_fnnas() {
+    echo -e "${STEPS} Unmounting fnnas chroot environment..."
+    cd "${current_path}"
+
+    sync && sleep 3
+    # Unmount virtual filesystems
+    umount -l "${tmp_fnnas}/dev/pts" 2>/dev/null
+    umount -R -l "${tmp_fnnas}/dev" 2>/dev/null
+    umount -l "${tmp_fnnas}/run" 2>/dev/null
+    umount -l "${tmp_fnnas}/sys" 2>/dev/null
+    umount -l "${tmp_fnnas}/proc" 2>/dev/null
+
+    # Unmount physical partitions
+    umount -l "${tmp_fnnas}/boot" 2>/dev/null
+    umount -l "${tmp_fnnas}" 2>/dev/null
+
+    # Only detach the specific loop device we created.
+    if [[ -n "${GLOBAL_LOOP_DEV}" ]]; then
+        losetup -d "${GLOBAL_LOOP_DEV}" 2>/dev/null
+        echo -e "${INFO} Loop device [ ${GLOBAL_LOOP_DEV} ] detached."
+    fi
+
+    # Cleanup temp directory
+    rm -f ${tmp_fnnas}/root/chroot_fnnas.sh
+    rm -f ${tmp_fnnas}/root/*.deb
+    rm -rf ${tmp_path}
+    echo -e "${INFO} Temporary files cleaned."
+
+    sync && sleep 3
+}
+
+chroot_fnnas() {
+    cd "${current_path}"
+    echo -e "${STEPS} Preparing chroot environment..."
+
+    # If host is x86_64, copy qemu-static for ARM64 emulation
+    if [[ "${arch_info}" == "x86_64" ]]; then
+        if [[ -f "/usr/bin/${qemu_binary_arm64}" ]]; then
+            echo -e "${INFO} Copying [ ${qemu_binary_arm64} ] to chroot..."
+            cp -f "/usr/bin/${qemu_binary_arm64}" "${tmp_fnnas}/usr/bin/"
+        else
+            # If not found on host, check if it already exists in image
+            if [[ ! -f "${tmp_fnnas}/usr/bin/${qemu_binary_arm64}" ]]; then
+                error_msg "QEMU binary [ ${qemu_binary_arm64} ] not found on host or target."
+            fi
+        fi
+    fi
+
+    # Copy /etc/resolv.conf for DNS resolution
+    if [[ -f "/etc/resolv.conf" ]]; then
+        echo -e "${INFO} Copying DNS config..."
+        cp -f /etc/resolv.conf "${tmp_fnnas}/etc/resolv.conf" 2>/dev/null
+    fi
+
+    # Copy the execution script into chroot
+    echo -e "${INFO} Copying [ chroot_fnnas.sh ] script..."
+    # Ensure script_path is correct relative to where you run this
+    if [[ ! -f "${script_path}/chroot_fnnas.sh" ]]; then
+        error_msg "Script not found: ${script_path}/chroot_fnnas.sh"
+    fi
+    cp -f "${script_path}/chroot_fnnas.sh" "${tmp_fnnas}/root/"
+    chmod +x "${tmp_fnnas}/root/chroot_fnnas.sh"
+
+    # Install additional deb packages if specified
+    if [[ "${debs_install}" =~ ^(amlogic|allwinner|rockchip)$ ]]; then
+        echo -e "${INFO} Preparing to install additional deb packages for platform: [ ${debs_install} ]..."
+        # Copy deb packages into chroot
+        if [[ -d "${fnnas_debs}/${debs_install}" ]]; then
+            echo -e "${INFO} Copying .deb packages for platform [ ${debs_install} ]..."
+            # Using *.deb to avoid copying subdirectories or other files
+            cp -f "${fnnas_debs}/${debs_install}"/*.deb "${tmp_fnnas}/root/" 2>/dev/null ||
+                echo -e "${WARNING} No .deb files found in [ ${fnnas_debs}/${debs_install} ]"
+        else
+            error_msg "Deb packages directory not found for platform: [ ${fnnas_debs}/${debs_install} ]"
+        fi
+    else
+        echo -e "${INFO} No additional deb packages to install."
+    fi
+
+    # Mount virtual filesystems
+    echo -e "${STEPS} Mounting virtual filesystems..."
+    [[ -d "${tmp_fnnas}/dev/pts" ]] || mkdir -p "${tmp_fnnas}/dev/pts"
+    mount -t proc /proc "${tmp_fnnas}/proc"
+    mount -t sysfs /sys "${tmp_fnnas}/sys"
+    mount --bind /dev "${tmp_fnnas}/dev"
+    mount -t devpts devpts "${tmp_fnnas}/dev/pts"
+    mount --bind /run "${tmp_fnnas}/run"
+    chmod 0666 "${tmp_fnnas}/dev/null"
+    sync && sleep 3
+
+    # Register trap to ensure unmount happens even if script is interrupted
+    trap unmount_fnnas EXIT
+
+    echo -e "${INFO} Entering chroot to generate kernel artifacts..."
+    chroot "${tmp_fnnas}" /bin/bash -c "/root/chroot_fnnas.sh ${debs_install}"
+
+    # Check execution result
+    [[ ${?} -ne 0 ]] && error_msg "Chroot script execution failed."
+
+    # Cleanup copied files
+    rm -f "${tmp_fnnas}/root/chroot_fnnas.sh"
+    rm -f "${tmp_fnnas}/root/"*.deb
+
+    # Check for version output file
+    [[ -f "${tmp_fnnas}/${kernel_version_output}" ]] || error_msg "Kernel version output file not found."
+    # Source the kernel version and platform name from the file generated inside chroot
+    source "${tmp_fnnas}/${kernel_version_output}"
+    # Trim whitespace just in case
+    kernel_version="$(echo "${kernel_version}" | tr -d '[:space:]')"
+    platform_name="$(echo "${platform_name}" | tr -d '[:space:]')"
+
+    # Validate retrieved values
+    [[ -z "${kernel_version}" || -z "${platform_name}" ]] && error_msg "Failed to retrieve valid kernel information."
+    echo -e "${INFO} Retrieved Kernel Version: [ ${kernel_version} ]"
+    echo -e "${INFO} Retrieved Platform Name:  [ ${platform_name} ]"
+
+    cd "${current_path}"
+
+    # Copy generated files to output directory
+    echo -e "${INFO} Extracting artifacts from chroot..."
+
+    # 1. Boot files
+    cp -rf "${tmp_fnnas}/boot/"*${kernel_version} "${tmp_outpath}/boot/"
+    # 2. DTB files: Based on flippy’s DTBs, use the official fnnas DTBs to overwrite files with the same names.
+    [[ "${dtbs_install}" =~ ^(true|yes)$ && -d "${fnnas_dtbs}/${platform_name}" ]] && {
+        echo -e "${INFO} Adding DTB files for platform: [ ${platform_name} ]..."
+        cp -rf "${fnnas_dtbs}/${platform_name}/"* "${tmp_outpath}/dtb/"
+    }
+    echo -e "${INFO} Copying DTB files from chroot..."
+    cp -rf "${tmp_fnnas}/boot/dtb/${platform_name}/"* "${tmp_outpath}/dtb/"
+    # 3. Modules
+    echo -e "${INFO} Copying modules from chroot..."
+    cp -rf "${tmp_fnnas}/usr/lib/modules/${kernel_version}" "${tmp_outpath}/modules/"
+    # 4. Headers
+    echo -e "${INFO} Copying headers from chroot..."
+    cp -rf "${tmp_fnnas}/usr/src/linux-headers-${kernel_version}/"* "${tmp_outpath}/headers/"
+
+    # Packaging into tar.gz
+    echo -e "${STEPS} Packaging artifacts into [ ${out_path} ]..."
+    kernel_out="$(echo ${kernel_version} | awk -F'-' '{print $1}')-${platform_name}"
+    [[ -d "${out_path}/${kernel_out}" ]] && rm -rf "${out_path}/${kernel_out}"
+    mkdir -p "${out_path}/${kernel_out}"
+
+    # Create tar.gz files
+    echo -e "${INFO} Creating kernel tar.gz files..."
+    (cd "${tmp_outpath}/boot" && tar -czf "${out_path}/${kernel_out}/boot-${platform_name}-${kernel_version}.tar.gz" *)
+    (cd "${tmp_outpath}/dtb" && tar -czf "${out_path}/${kernel_out}/dtb-${platform_name}-${kernel_version}.tar.gz" *)
+    (cd "${tmp_outpath}/modules" && tar -czf "${out_path}/${kernel_out}/modules-${platform_name}-${kernel_version}.tar.gz" *)
+    (cd "${tmp_outpath}/headers" && tar -czf "${out_path}/${kernel_out}/header-${platform_name}-${kernel_version}.tar.gz" *)
+    sync && sleep 3
+
+    # Add sha256sum integrity verification file
+    echo -e "${INFO} Generating sha256sums file..."
+    cd "${out_path}/${kernel_out}/"
+    sha256sum * >sha256sums
+
+    # Final packaging
+    cd "${current_path}"
+    rm -f ${out_path}/${kernel_out}.tar.gz
+    tar -czf "${out_path}/${kernel_out}.tar.gz" -C "${out_path}" "${kernel_out}"
+    rm -rf "${out_path}/${kernel_out}"
+}
+
+clean_tmp() {
+    echo -e "${STEPS} Cleaning temporary files..."
+
+    # Remove trap to avoid double unmount
+    trap - EXIT
+    # Unmount fnnas base image
+    unmount_fnnas
+}
+
+#================================== Main Execution ==================================
+
+# Show welcome message
+echo -e "${STEPS} Welcome to Recompile fnnas kernel packer!"
+# Check script permission
+[[ "$(id -u)" == 0 ]] || error_msg "Please run this script as root: [ sudo ./${0} ]"
+
+# Initialize variables
+init_var "${@}"
+# Download kernel debs files
+[[ "${debs_install}" =~ ^(amlogic|allwinner|rockchip)$ ]] && download_debs
+# Download kernel dtbs files
+[[ "${dtbs_install}" =~ ^(true|yes)$ ]] && download_dtbs
+# Find fnnas base image
+find_fnnas
+# Extract and mount fnnas base image
+extract_fnnas
+# Process inside chroot (generate initrd, copy files, package)
+chroot_fnnas
+# Cleanup temporary files and unmount
+clean_tmp
+
+echo -e "${SUCCESS} Kernel files have been packaged successfully!"
+echo -e "${INFO} Output directory: [ ${out_path} ]\n$(ls -hl ${out_path})"
