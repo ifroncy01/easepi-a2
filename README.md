@@ -1,26 +1,24 @@
 <div align="center">
-    <img src="https://github.com/user-attachments/assets/ea86c39b-4ed6-4f14-b7e6-bc551b495e39" alt="FnNAS" />
+    <img src="https://github.com/user-attachments/assets/c48d1b9c-e1d9-43a6-b5a5-69c0bdb2ff3b" alt="FnNAS" />
 </div>
 <br />
 
-View Chinese description | [查看中文说明](README.cn.md)
+[FnNAS](https://fnnas.com/) 是一款基于最新 Linux 内核（Debian 发行版）深度定制的操作系统。它拥有强大的硬件兼容性，完美支持主流 x86 及 Arm64 设备，允许用户自由组装 NAS 并灵活扩展外部存储。现在，你可以轻松将电视盒子的 Android TV 系统替换为 FnNAS，将其变身为一台功能强大的私有数据存储服务器。
 
-[FnNAS](https://fnnas.com/) is an operating system deeply customized based on the latest Linux kernel (Debian distribution). It boasts powerful hardware compatibility, perfectly supporting mainstream x86 and Arm64 devices, allowing users to freely assemble a NAS and flexibly expand external storage. Now, you can easily replace the Android TV system of your TV box with FnNAS, transforming it into a powerful private data storage server.
+本项目得益于众多 [贡献者](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/CONTRIBUTORS.md) 的辛勤付出，并在 FnNAS 官方技术大佬的指导下，专门为 `Amlogic`、`Rockchip` 和 `Allwinner` 架构的电视盒子构建了适配 Arm64 设备的 FnNAS 系统。构建版本完整继承了官方系统，完美支持写入 eMMC 启动及内核在线更新等功能。最新的固件请前往 [Releases](https://github.com/ophub/fnnas/releases) 页面下载。欢迎大家 `Fork` 本项目进行个性化定制。如果您觉得本项目对您有帮助，请点击仓库右上角的 `Star` ⭐ 以示支持！
 
-This project benefits from the hard work of numerous [contributors](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/CONTRIBUTORS.md). Under the guidance of official technical experts from FnNAS, we have built an FnNAS system specifically adapted for Arm64 devices, covering `Amlogic`, `Rockchip`, and `Allwinner` architecture TV boxes. The build version fully inherits the official system features, perfectly supporting functions like writing to eMMC boot and online kernel updates. Please visit the [Releases](https://github.com/ophub/fnnas/releases) page to download the latest firmware. Everyone is welcome to `Fork` this project for personalized customization. If you find this project helpful, please click the `Star` ⭐ in the upper right corner of the repository to show your support!
+## FnNAS 固件默认信息
 
-## FnNAS Firmware Default Information
-
-| System Name    | Default Account | Default Password | SSH Port | IP Address |
+| 系统名称        | 默认账号 | 默认密码  | SSH 端口 | IP 地址 |
 | -------------- | ------- | ------- | ------- | ------- |
-| 🛜 [FnNAS.OS](https://github.com/ophub/fnnas/releases) | Custom | Custom | 22 | Get IP from Router |
+| 🛜 [FnNAS.OS](https://github.com/ophub/fnnas/releases) | 自定义 | 自定义 | 22 | 从路由器获取 IP |
 
 
-## Supported Device List
+## 支持的设备列表
 
-⬆️ Models for each platform (Amlogic/Rockchip/Allwinner) are arranged by SoC performance from high to low.
+⬆️ 各平台（晶晨/瑞芯微/全志）型号均按 SoC 性能由高至低排列。
 
-| SoC  | [Device](https://github.com/ophub/fnnas/releases) | [Kernel](https://github.com/ophub/fnnas) |
+| SoC  | [设备](https://github.com/ophub/fnnas/releases) | [内核](https://github.com/ophub/fnnas) |
 | ---- | ---- | ---- |
 | a311d | [Khadas-VIM3](https://github.com/ophub/amlogic-s9xxx-openwrt/issues/99), [WXY-OES](https://github.com/ophub/amlogic-s9xxx-armbian/issues/2666) | [fnnas](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) |
 | s922x | [Beelink-GT-King](https://github.com/ophub/amlogic-s9xxx-armbian/issues/370), [Beelink-GT-King-Pro](https://github.com/ophub/amlogic-s9xxx-armbian/issues/707), [Ugoos-AM6-Plus](https://github.com/ophub/amlogic-s9xxx-openwrt/issues/464), [ODROID-N2](https://github.com/ophub/amlogic-s9xxx-openwrt/issues/201), [X88-King](https://github.com/ophub/amlogic-s9xxx-armbian/issues/988), [Ali-CT2000](https://github.com/ophub/amlogic-s9xxx-armbian/issues/1150), [WXY-OES-Plus](https://github.com/ophub/amlogic-s9xxx-armbian/issues/3029) | [fnnas](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) |
@@ -50,116 +48,114 @@ This project benefits from the hard work of numerous [contributors](https://gith
 | h618 | [OrangePi-Zero3](https://github.com/ophub/fnnas/issues/158) | [fnnas](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) |
 
 > [!TIP]
-> Currently, [s905 boxes](https://github.com/ophub/amlogic-s9xxx-armbian/issues/1173) can only be used from `TF/SD/USB`, while other box models support writing to `eMMC`. For more information, please check the [✅Supported Device List Instructions](make-fnnas/fnnas-files/common-files/etc/model_database.conf). You can refer to section 12.15 of the documentation for methods on [adding new supported devices](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/documents/README.md#1215-how-to-add-new-supported-devices).
+> 目前 [s905 的盒子](https://github.com/ophub/amlogic-s9xxx-armbian/issues/1173)只能在 `TF/SD/USB` 中使用，其他型号的盒子支持写入 `eMMC` 中使用。更多信息请查阅 [✅支持的设备列表说明](make-fnnas/fnnas-files/common-files/etc/model_database.conf)。可以参考说明文档中 12.15 章节的方法[添加新的支持设备](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/documents/README.cn.md#1215-如何添加新的支持设备)。
 
+## 安装及升级 FnNAS 的相关说明
 
-## Instructions for Installing and Upgrading FnNAS
+选择和你的盒子型号对应的 FnNAS 系统，不同设备的使用方法查看对应的说明。
 
-Select the FnNAS system corresponding to your box model. View the corresponding instructions for different device usage.
+- ### 安装 FnNAS 到 eMMC
 
-- ### Install FnNAS to eMMC
+1. `Rockchip` 平台的安装方法请查看说明文档中的 [第 8 章节](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/documents/README.cn.md) 的介绍，和 Armbian 的安装方法相同。
 
-1. For `Rockchip` platforms, please refer to [Chapter 8](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/documents/README.cn.md) of the documentation for installation methods, which are the same as Armbian installation.
-
-2. For `Amlogic` and `Allwinner` platforms, use tools like [Rufus](https://rufus.ie/) or [balenaEtcher](https://www.balena.io/etcher/) to write the system to a USB drive, then insert the prepared USB drive into the box. Check your router for a new device named 'debian' and find its IP address (e.g., `192.168.1.15`). Access http://192.168.1.15:5666 via a browser to enter the FnNAS account creation interface. After creating a custom account and logging into the FnNAS system, enable SSH in `System Settings` → `SSH`. Then use an SSH connection tool to enter the system terminal and enter the command:
+2. `Amlogic` 和 `Allwinner` 平台，使用 [Rufus](https://rufus.ie/) 或者 [balenaEtcher](https://www.balena.io/etcher/) 等工具将系统写入 USB 里，然后把写好系统的 USB 插入盒子。到设备接入的路由器里查找新上线的名称是 debian 的设备，查看其 IP 地址（例如：`192.168.1.15`），然后通过浏览器访问 http://192.168.1.15:5666 进入飞牛账号创建界面。创建自定义账号后登录飞牛系统，在 `系统设置` → `SSH` 里开启 SSH 功能，然后使用 SSH 连接工具进入系统终端，输入命令：
 
 ```shell
 sudo -i
 fnnas-install
 ```
 
-| Optional | Default | Options | Description       |
-| -------- | ------- | ------- | ----------------- |
-| -m       | no      | yes/no  | Use mainline u-boot |
-| -a       | yes     | yes/no  | Use [ampart](https://github.com/7Ji/ampart) partition adjustment tool |
-| -l       | no      | yes/no  | Show full device list |
+| 可选参数  | 默认值   | 选项     | 说明            |
+| -------  | ------- | ------  | -------------- |
+| -m       | no      | yes/no  | 使用主线 u-boot  |
+| -a       | yes     | yes/no  | 使用 [ampart](https://github.com/7Ji/ampart) 分区表调整工具 |
+| -l       | no      | yes/no  | 显示全部设备列表  |
 
-Example: `fnnas-install -m yes`
+举例：`fnnas-install -m yes`
 
 > [!TIP]
-> Partition option description: Customizing the system rootfs size is available when disk space exceeds 16GiB (Default: 16GiB).
+> 分区选项说明：当磁盘可用空间大于 16GiB 时，支持自定义系统根分区大小（默认 16GiB）。
 >
-> During the system re-installation process, the script automatically detects the partition structure on the eMMC. If a personal data partition (P3) is detected, Option `3` will be activated in the menu. Selecting this option strictly preserves the current partition table layout, thereby ensuring that the data within the P3 partition is not overwritten. Upon completion of the installation, you can directly mount and access the partition via the 'Storage Manager' interface in FnOS.
+> 在系统重装过程中，脚本会自动检测 eMMC 上的分区结构。若发现存在个人数据分区（P3），分区菜单将激活选项 `3`。选择该选项可严格保留当前分区表布局，从而确保 P3 分区内的数据不被覆盖。 系统安装完毕后，您可以在飞牛系统的 `存储空间管理` 界面中直接挂载并使用该分区。
 
-| Optional | Description |
-| :------: | :---------- |
-| **1**    | Rootfs partition limit to **16GiB**.                           |
-| **2**    | **[default]** Rootfs partition expand to full disk (**100%**). |
-| **3**    | **Retain current Rootfs size** (Preserve P3 Data).             |
-| **≥16**  | Enter a number (**GiB**) to specify Rootfs partition size.     |
+| 选项     | 说明   |
+| :-----: | :----- |
+| **1**   | 系统分区(Rootfs) 限制为 **16GiB**。             |
+| **2**   | **[默认]** 系统分区扩容至全盘 (**100%**)。       |
+| **3**   | **继承当前系统分区大小** (保留 P3 分区的个人数据)。 |
+| **≥16** | 输入数字 (**GiB**) 以自定义系统分区大小。         |
 
-- ### Update FnNAS Kernel
+- ### 更新 FnNAS 内核
 
-Login to FnNAS system SSH terminal → Enter command:
-
+登录 FnNAS 系统 SSH 终端 → 输入命令：
 ```shell
 sudo -i
 fnnas-update
 ```
 
-| Optional | Default      | Options       | Description                      |
+| 可选参数  | 默认值        | 选项           | 说明                              |
 | -------- | ------------ | ------------- | -------------------------------- |
-| -r       | ophub/fnnas  | `<owner>/<repo>` | Set the repository to download the kernel from github.com |
-| -k       | Latest version | Kernel version | Set the [kernel version](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) |
-| -b       | yes          | yes/no        | Automatically back up the current system's kernel when updating the kernel |
-| -m       | no           | yes/no        | Use mainline u-boot |
-| -s       | None         | None/DiskName | [SOS] Restore the system kernel in eMMC/NVMe/sdX and other disks |
-| -h       | None         | None          | View help |
+| -r       | ophub/fnnas | `<owner>/<repo>` | 设置从 github.com 下载内核的仓库  |
+| -k       | 最新版        | 内核版本       | 设置[内核版本](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas)  |
+| -b       | yes          | yes/no        | 更新内核时自动备份当前系统使用的内核    |
+| -m       | no           | yes/no        | 使用主线 u-boot                    |
+| -s       | 无           | 无/磁盘名称     | [SOS] 恢复 eMMC/NVMe/sdX 等磁盘中的系统内核 |
+| -h       | 无           | 无             | 查看使用帮助                       |
 
-Example: `fnnas-update -k 6.12.63`
+举例: `fnnas-update -k 6.12.63`
 
-When specifying the kernel version number via the `-k` parameter, you can specify the exact version number, e.g., `fnnas-update -k 6.12.63`, or vaguely specify the kernel series, e.g., `fnnas-update -k 6.12`. When vaguely specified, the latest version of the specified series will be used automatically.
+通过 `-k` 参数指定内核版本号时，可以准确指定具体版本号，例如：`fnnas-update -k 6.12.63`，也可以模糊指定到内核系列，例如：`fnnas-update -k 6.12`，当模糊指定时将自动使用指定系列的最新版本。
 
-When updating the kernel, the currently used kernel will be automatically backed up in the `/ddbr/backup` directory. The last 3 used kernel versions are retained. If the newly installed kernel is unstable, you can restore to the backed-up kernel at any time. If a kernel update failure causes the system to fail to boot, you can restore the system kernel via `fnnas-update -s`.
+更新内核时会自动备份当前系统使用的内核，存储路径在 `/ddbr/backup` 目录里，保留最近使用过的 3 个版本的内核，如果新安装的内核不稳定，可以随时恢复回备份的内核。如果更新内核失败导致系统无法启动，可以通过 `fnnas-update -s` 来恢复系统内核。
 
-- ### Create Swap for FnNAS
+- ### 为 FnNAS 创建 swap
 
-If you feel that the current box memory is insufficient when using memory-intensive applications like `docker`, you can create a `swap` virtual memory partition to use a certain amount of disk space as memory. The unit for the input parameter in the command below is `GB`, defaulting to `1`.
+如果你在使用 `docker` 等内存占用较大的应用时，觉得当前盒子的内存不够使用，可以创建 `swap` 虚拟内存分区，将磁盘空间的一定容量虚拟成内存来使用。下面命令输入参数的单位是 `GB`，默认为 `1`。
 
-Login to FnNAS system SSH terminal → Enter command:
+登录 FnNAS 系统 SSH 终端 → 输入命令：
 
 ```shell
 fnnas-swap 1
 ```
 
-- ### Control LED Display
+- ### 控制 LED 显示
 
-Login to FnNAS system SSH terminal → Enter command:
+登录 FnNAS 系统 SSH 终端 → 输入命令：
 
 ```shell
 fnnas-openvfd
 ```
 
-Debug according to the [LED Screen Display Control Instructions](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/documents/led_screen_display_control.md).
+根据 [LED 屏显示控制说明](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/documents/led_screen_display_control.md) 进行调试。
 
-- ### Backup/Restore eMMC Original System
+- ### 备份/还原 eMMC 原系统
 
-Supports backing up/restoring the box's `eMMC` partition on `TF/SD/USB`. It is recommended that you backup the Android TV system that comes with the current box before installing the FnNAS system on a brand new box, so that it can be used later when restoring the TV system.
+支持在 `TF/SD/USB` 中对盒子的 `eMMC` 分区进行备份/恢复。建议您在全新的盒子里安装 FnNAS 系统前，先对当前盒子自带的安卓 TV 系统进行备份，以便日后在恢复电视系统等情况下使用。
 
-Please boot the FnNAS system from `TF/SD/USB` → Enter command.
+请从 `TF/SD/USB` 启动 FnNAS 系统 → 输入命令：
 
 ```shell
 fnnas-ddbr
 ```
 
-Enter `b` according to the prompt to back up the system, and enter `r` to restore the system.
+根据提示输入 `b` 进行系统备份，输入 `r` 进行系统恢复。
 
 > [!IMPORTANT]
-> Additionally, you can use the flashing method to flash the Android system into eMMC. The Android system download images can be found in [Tools](https://github.com/ophub/kernel/releases/tag/tools).
+> 除此之外也可以通过线刷的方法，将安卓系统刷入 eMMC 中，安卓系统的下载镜像可在 [Tools](https://github.com/ophub/kernel/releases/tag/tools) 中查找。
 
-- ### Sync Latest Service Scripts
+- ### 同步最新服务脚本
 
-To update all service scripts in the local system to the latest version, login to FnNAS system SSH terminal → Enter command:
+将本地系统中的全部服务脚本更新到最新版本，可以登录 FnNAS 系统 SSH 终端 → 输入命令：
 
 ```shell
 fnnas-sync
 ```
 
-## Local Packaging fnnas Image
+## 本地化打包
 
-1. Clone the repository locally: `git clone --depth 1 https://github.com/ophub/fnnas.git`
+1. 克隆仓库到本地 `git clone --depth 1 https://github.com/ophub/fnnas.git`
 
-2. Install necessary packages (e.g., Ubuntu 24.04):
+2. 安装必要的软件包（如 Ubuntu 24.04）
 
 ```shell
 sudo apt-get update -y
@@ -168,37 +164,37 @@ sudo apt-get full-upgrade -y
 sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
 ```
 
-1. Enter the `~/fnnas` root directory, create a folder named `fnnas-arm64` in the root directory, and upload the FnNAS image file (e.g., `fnos_arm_1.0.0_258.img`) to the `~/fnnas/fnnas-arm64` directory.
+3. 进入 `~/fnnas` 根目录，在根目录下创建文件夹 `fnnas-arm64` ，并上传 FnNAS 镜像文件 ( 如：`fnos_arm_1.0.0_258.img` ) 到 `~/fnnas/fnnas-arm64` 目录里。
 
-2. Enter the `~/fnnas` root directory, then run the sudo `./renas -b s905x3 -k 6.12.63` command to generate the FnNAS image file for the specified board. The generated files are saved in the `~/fnnas/out` directory.
+4. 进入 `~/fnnas` 根目录，然后运行 `sudo ./renas -b s905x3 -k 6.12.63` 命令即可生成指定 board 的 FnNAS 镜像文件。生成的文件保存在 `~/fnnas/out` 目录里。
 
-- ### Local Packaging fnnas image Parameter Description
+- ### 本地化打包镜像参数说明
 
-| Parameter | Meaning     | Description |
-| ----      | ----------  | ----------  |
-| -b        | Board      | Specifies the device code to be compiled. For example, `-b s905x3` means compiling the device with code s905x3. Multiple devices can be connected with `_`, such as `-b s905x3_s905d`. Special values: `all` means compile all devices, `first50` means compile the first 50 in the device library, `range50_100` means start from the 51st to the 100th, `range100_150` means start from the 101st to the 150th, `last20` means the last 20. Device code lists are detailed in the BOARD configuration item in [model_database.conf](make-fnnas/fnnas-files/common-files/etc/model_database.conf). Default value: `all` |
-| -r        | KernelRepo | Specifies the `<owner>/<repo>` of the github.com kernel repository. Default value: `ophub/fnnas` |
-| -k        | Kernel     | Specify [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) name, such as `-k 6.6.12`. Connect multiple kernels with `_`, such as `-k 6.12.63_6.18.3`. |
-| -a        | AutoKernel | Sets whether to automatically adopt the latest version of the kernel in the same series. When set to `true`, it will automatically check the kernel library for a newer version of the kernel specified in `-k`, such as 6.12.63. If there is a newer version after 6.12.63, it will automatically switch to the latest version. When set to `false`, the specified version kernel will be compiled. Default value: `true` |
-| -s        | Size       | Set the size(Unit: MiB) of the system's image partitions. When setting only the `ROOTFS` partition size, you can specify a single value, for example: `-s 6144`. When setting both `BOOTFS` and `ROOTFS` partition sizes, use / to connect the two values, for example: `-s 512/6144`. The default value is `512/6144` |
-| -e        | RootfsExpand | Set the automatic expansion size (Unit: GiB) of the system root partition. Default value: `16` |
-| -n        | BuilderName | Set the Armbian system builder signature. Do not include spaces when setting the signature. Default value: `None` |
+| 参数  | 含义       | 说明        |
+| ---- | ---------- | ---------- |
+| -b   | Board      | 指定需要编译的设备代号。例如，`-b s905x3` 表示编译代号为 s905x3 的设备，多个设备可用下划线连接，如 `-b s905x3_s905d`。特殊值：`all` 表示编译全部设备，`first50` 表示编译设备库中的前 50 个，`range50_100` 表示从第 51 个开始至第 100 个，`range100_150` 表示从第 101 个开始至第 150 个，`last20` 表示最后的 20 个。设备代号列表详见 [model_database.conf](make-fnnas/fnnas-files/common-files/etc/model_database.conf) 中的 `BOARD` 配置项。默认值为 `all` |
+| -r   | KernelRepo | 指定 github.com 内核仓库的 `<owner>/<repo>`。默认值：`ophub/fnnas` |
+| -k   | Kernel     | 指定 [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) 名称，如 `-k 6.12.63` 。多个内核使用 `_` 进行连接，如 `-k 6.12.63_6.18.3` 。 |
+| -a   | AutoKernel | 设置是否自动采用同系列最新版本内核。当为 `true` 时，将自动在内核库中查找在 `-k` 中指定的内核如 6.12.63 的同系列是否有更新的版本，如有 6.12.63 之后的最新版本时，将自动更换为最新版。设置为 `false` 时将编译指定版本内核。默认值：`true` |
+| -s   | Size       | 对系统的镜像分区大小（单位：MiB）进行设置，只设置 `ROOTFS` 分区大小时可以只指定一个数值，例如： `-s 6144`。需要同时设置 `BOOTFS` 和 `ROOTFS` 分区大小时，使用 / 对两个数值进行连接，例如： `-s 512/6144`。默认值：`512/6144` |
+| -e   | RootfsExpand | 设置系统根分区自动扩容大小（单位：GiB）。默认值：`16` |
+| -n   | BuilderName | 设置 FnNAS 系统构建者签名。设置签名时请勿包含空格。默认值：`无` |
 
-- `sudo ./renas` : Use default configuration to package for `all` models of TV boxes.
-- `sudo ./renas -b s905x3 -k 6.12.63` : Recommended. Use default configuration for packaging with relevant kernel.
-- `sudo ./renas -b s905x3 -k 6.12.y` : Use default configuration for packaging, using the latest version of the 6.12.y series kernel.
-- `sudo ./renas -b s905x3_s905d -k 6.12.63_6.18.3` : Use default configuration to package multiple kernels simultaneously. Use `_` to connect multi-kernel parameters.
-- `sudo ./renas -b s905x3 -k 6.12.63 -s 6144` : Use default configuration, specify one kernel and one model for packaging, system size set to `6144` MiB.
-- `sudo ./renas -b s905x3_s905d` : Use default configuration to package all kernels for multiple models of TV boxes, use `_` to connect multiple models.
-- `sudo ./renas -k 6.12.63_6.18.3` : Use default configuration, specify multiple kernels to package for all models of TV boxes, kernel packages connected with `_`.
-- `sudo ./renas -k 6.12.63_6.18.3 -a true` : Use default configuration, specify multiple kernels to package for all models of TV boxes, kernel packages connected with `_`. Automatically upgrade to the latest kernel of the same series.
-- `sudo ./renas -b s905x3 -e 32` : Use default configuration to package for `s905x3` model of TV box, set rootfs automatic expansion size to `32` GiB.
+- `sudo ./renas` : 使用默认配置，对全部型号的电视盒子进行打包。
+- `sudo ./renas -b s905x3 -k 6.12.63` : 推荐使用. 使用默认配置进行相关内核打包。
+- `sudo ./renas -b s905x3 -k 6.12.y` : 使用默认配置进行相关内核打包，内核使用 6.12.y 系列的最新版。
+- `sudo ./renas -b s905x3_s905d -k 6.12.63_6.18.3` : 使用默认配置，进行多个内核同时打包。使用 `_` 进行多内核参数连接。
+- `sudo ./renas -b s905x3 -k 6.12.63 -s 6144` : 使用默认配置，指定一个内核，一个型号进行打包，系统大小设定为 `6144` MiB。
+- `sudo ./renas -b s905x3_s905d`  使用默认配置，对多个型号的电视盒子进行全部内核打包, 使用 `_` 进行多型号连接。
+- `sudo ./renas -k 6.12.63_6.18.3` : 使用默认配置，指定多个内核，进行全部型号电视盒子进行打包, 内核包使用 `_` 进行连接。
+- `sudo ./renas -k 6.12.63_6.18.3 -a true` : 使用默认配置，指定多个内核，进行全部型号电视盒子进行打包, 内核包使用 `_` 进行连接。自动升级到同系列最新内核。
+- `sudo ./renas -b s905x3 -e 32` : 使用默认配置，指定打包 `s905x3` 的固件，系统根分区自动扩容大小设定为 `32` GiB。
 
-## Use GitHub Actions for Packaging fnnas image
+## 使用 GitHub Actions 进行镜像编译
 
-1. Workflow configuration files are located in [.github/workflows](.github/workflows).
+1. 关于 Workflows 文件的配置在 [.github/workflows](.github/workflows) 文件里。
 
-2. Select `Build FnNAS Image` on the Actions page to compile using [build-fnnas-image.yml](.github/workflows/build-fnnas-image.yml). Click the `Run workflow` button to compile. In the options panel, you can set the FnNAS image file path in `Custom fnnas image download url`, e.g., `https://fnnas.com/.../fnos_arm_1.0.0_258.img.xz` or other network download addresses. If not set, the official image saved in [fnnas_base_image](https://github.com/ophub/fnnas/releases/tag/fnnas_base_image) will be used by default.
+2. 在 [Actions](https://github.com/ophub/fnnas/actions) 页面里选择 ***`Build FnNAS Image`*** 即可使用 [build-fnnas-image.yml](.github/workflows/build-fnnas-image.yml) 进行编译。点击 ***`Run workflow`*** 按钮即可编译。在选项面板里，可以在 `Custom fnnas image download url` 里设置 FnNAS 镜像文件的路径，例如： `https://fnnas.com/.../fnos_arm_1.0.0_258.img.xz` 等网络下载地址，如果不设置，将默认使用 [fnnas_base_image](https://github.com/ophub/fnnas/releases/tag/fnnas_base_image) 里保存的官方镜像进行编译。
 
 ```yaml
 - name: Build FnNAS Image
@@ -211,38 +207,38 @@ sudo apt-get install -y $(cat make-fnnas/script/ubuntu2404-make-fnnas-depends)
     rootfs_expand: 16
 ```
 
-- ### GitHub Actions Packaging fnnas Image
+- ### GitHub Actions 制作 fnnas 镜像参数说明
 
-The related parameters correspond to the `local packaging command`, please refer to the above description.
+相关参数与`本地打包命令`相对应，请参考上面的说明。
 
-| Parameter       | Default       | Description                                             |
-|-----------------|---------------|---------------------------------------------------------|
-| fnnas_path      | None          | Set the path of the official Arm64 original FnNAS image file. Supports using file paths in the current workflow like `fnnas/*.img.xz`, and also supports network download addresses like: `https://fnnas.com/.../fnos_arm_1.0.0_258.img.xz` |
-| fnnas_board     | all           | Set the board for packaging boxes. Function refers to `-b` |
-| kernel_repo     | ophub/fnnas   | Specify the `<owner>/<repo>` of the github.com kernel repository. Function refers to `-r` |
-| fnnas_kernel    | 6.12.y        | Set the [version](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) of the kernel. Function refers to `-k` |
-| auto_kernel     | true          | Set whether to automatically adopt the latest version of the kernel in the same series. Function refers to `-a` |
-| fnnas_size      | 512/6144      | Set the size of the system `BOOTFS` and `ROOTFS` partitions. Function refers to `-s` |
-| rootfs_expand   | 16            | Set the automatic expansion size (Unit: GiB) of the system root partition. Function refers to `-e` |
-| builder_name    | None          | Set the FnNAS system `builder signature`. Function refers to `-n` |
+| 参数              | 默认值         | 说明                                             |
+|------------------|---------------|--------------------------------------------------|
+| fnnas_path       | 无            | 设置官方 Arm64 原版 FnNAS 镜像文件的路径，支持使用当前工作流中的文件路径如 `fnnas/*.img.xz` ，也支持使用网络下载地址如： `https://fnnas.com/.../fnos_arm_1.0.0_258.img.xz` |
+| fnnas_board      | all           | 设置打包盒子的 `board` ，功能参考 `-b`                 |
+| kernel_repo      | ophub/fnnas   | 指定 github.com 内核仓库的 `<owner>/<repo>`，功能参考 `-r` |
+| fnnas_kernel     | 6.12.y        | 设置内核 [版本](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas)，功能参考 `-k` |
+| auto_kernel      | true          | 设置是否自动采用同系列最新版本内核，功能参考 `-a`       |
+| fnnas_size       | 512/6144      | 设置系统 BOOTFS 和 ROOTFS 分区的大小，功能参考 `-s`   |
+| rootfs_expand    | 16            | 设置系统根分区自动扩容大小，功能参考 `-e`              |
+| builder_name     | 无            | 设置 FnNAS 系统构建者签名，功能参考 `-n`              |
 
-- ### Explanation of Parameters for Local FnNAS Kernel Build
+- ### 本地化制作 fnnas 内核参数说明
 
-| Parameter | Meaning | Description |
-| :-------- | :------ | :---------- |
-| -r | debs_repo | Specifies the `<owner>/<repo>` of the debs kernel repository on github.com. Default value: `ophub/fnnas` |
-| -e | debs_install | Sets whether to install official `.deb` kernel packages for different platforms. Options: `amlogic` / `rockchip` / `allwinner` / `none`. Default value: `none` |
-| -t | dtbs_install | Sets whether to install additional `dtbs` files missing from the official release. Options: `true` / `false`. Default value: `true` |
-| -k | dtbs_version | Specifies the [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) name/version, e.g., `-k 6.12.63`. Default value: `6.12.y` |
+| 参数  | 含义          | 说明        |
+| ---- | ------------- | ---------- |
+| -r   | debs_repo     | 指定 github.com 的 debs 内核仓库的 `<owner>/<repo>`。默认值：`ophub/fnnas` |
+| -e   | debs_install  | 设置是否安装官方提供的不同平台的 debs 格式内核包。选项：`amlogic` / `rockchip` / `allwinner` / `none`。默认值：`none` |
+| -t   | dtbs_install  | 设置是否补充安装官方没有的 dtbs 文件。可选项 `true` / `false`。默认值：`true` |
+| -k   | dtbs_version  | 指定 [kernel](https://github.com/ophub/fnnas/releases/tag/kernel_fnnas) 名称，如 `-k 6.12.63` 。默认值：`6.12.y` |
 
-- `sudo ./rekernel` : Uses default configuration. Does not install dtbs packages nor supplement dtbs files, packages the kernel in the current fnnas image.
-- `sudo ./rekernel -e amlogic` : First installs the `amlogic` deb kernel packages into the current system, then proceeds with kernel packaging.
-- `sudo ./rekernel -t true` : First installs additional `dtbs` files (missing from official sources) into the current system, then proceeds with kernel packaging.
-- `sudo ./rekernel -e allwinner -t false` : First installs the `allwinner` deb kernel packages into the current system, does not install additional `dtbs` files, and then proceeds with kernel packaging.
+- `sudo ./rekernel` : 使用默认配置。不安装 dtbs 包也不补充 dtbs文件，把当前 fnnas 镜像里的内核进行打包。
+- `sudo ./rekernel -e amlogic` : 先把 amlogic 的 debs 内核包安装到当前系统里，然后在进行内核打包。
+- `sudo ./rekernel -t true` : 先把官方没有的 dtbs 文件补充安装到当前系统里，然后在进行内核打包。
+- `sudo ./rekernel -e allwinner -t false` : 先把 allwinner 的 debs 内核包安装到当前系统里，不补充安装 dtbs 文件，然后进行内核打包。
 
-## Compiling fnnas Kernel using GitHub Actions
+## 使用 GitHub Actions 编译 fnnas 内核
 
-For details on how to compile the FnNAS-specific kernel, please refer to the instructions in [build-fnnas-kernel.yml](.github/workflows/build-fnnas-kernel.yml).
+飞牛专用内核的编译方法详见 [build-fnnas-kernel.yml](.github/workflows/build-fnnas-kernel.yml) 的说明。
 
 ```yaml
 - name: Build FnNAS Kernel
@@ -250,46 +246,47 @@ For details on how to compile the FnNAS-specific kernel, please refer to the ins
   with:
     build_target: kernel
     fnnas_path: fnnas/*.img
+    debs_repo: ophub/fnnas
     dtbs_install: true
     dtbs_version: 6.12.y
 ```
 
-The relevant parameters correspond to the `local packaging command`. Please refer to the instructions above.
+相关参数与`本地打包命令`相对应，请参考上面的说明。
 
-| Parameter        | Default       | Description                                  |
+| 参数              | 默认值         | 说明                                         |
 |------------------|---------------|----------------------------------------------|
-| fnnas_path       | None          | Sets the path to the official original Arm64 FnNAS image file. |
-| debs_repo        | ophub/fnnas   | Sets the `<owner>/<repo>` of the debs kernel repository on github.com. Refer to `-r` for functionality. |
-| debs_install     | none          | Sets whether to install official kernel packages in `.deb` format. Refer to `-e` for functionality. |
-| dtbs_install     | true          | Sets whether to install additional `dtbs` files missing from the official release. Refer to `-t` for functionality. |
-| dtbs_version     | 6.12.y        | Sets the kernel version. Refer to `-k` for functionality. |
+| fnnas_path       | 无            | 设置官方 Arm64 原版 FnNAS 镜像文件的路径。        |
+| debs_repo        | ophub/fnnas   | 指定 github.com 的 debs 内核仓库的 `<owner>/<repo>`，功能参考 `-r` |
+| debs_install     | none          | 设置是否安装官方提供的不同平台的 debs 格式内核包。功能参考 `-e`   |
+| dtbs_install     | true          | 设置是否补充安装官方没有的 dtbs 文件。功能参考 `-t` |
+| dtbs_version     | 6.12.y        | 设置内核版本号。功能参考 `-k`                    |
 
-- ### GitHub Actions Output Variable Description
+- ### GitHub Actions 输出变量说明
 
-fnnas and kernel use the same output parameters.
+飞牛镜像和内核使用的输出参数一样。
 
-Uploading to `Releases` requires setting `Workflow Read and Write permissions` for the repository. See [Usage Instructions](https://github.com/ophub/amlogic-s9xxx-armbian/tree/main/documents#2-set-up-private-variable-github_token-etc) for details
+上传到 `Releases` 需要给仓库设置 `Workflow 读写权限`，详见[使用说明](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/documents/README.cn.md#2-设置隐私变量-github_token)。
 
-| Parameter                        | Default       | Description                           |
-|----------------------------------|---------------|---------------------------------------|
-| `${{ env.PACKAGED_OUTPUTPATH }}` | out           | FnNAS system files output path      |
-| `${{ env.PACKAGED_OUTPUTDATE }}` | 04.13.1058    | Packaging date (month.day.hourminute) |
-| `${{ env.PACKAGED_STATUS }}`     | success       | Packaging status: success / failure   |
+| 参数                              | 默认值         | 说明                       |
+|----------------------------------|---------------|----------------------------|
+| `${{ env.PACKAGED_OUTPUTPATH }}` | fnnas/out     | FnNAS 系统和内核文件输出路径   |
+| `${{ env.PACKAGED_OUTPUTDATE }}` | 04.13.1058    | 打包日期（月.日.时分）         |
+| `${{ env.PACKAGED_STATUS }}`     | success       | 打包状态：success / failure  |
 
-## FnNAS Contributors
+## FnNAS 贡献者
 
-First of all, thanks to experts like [coolsnowwolf](https://github.com/coolsnowwolf/lede) and [unifreq](https://github.com/unifreq/openwrt_packit) for providing technical guidance on adapting this project for FnNAS. Also, thanks to the numerous [contributors](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/CONTRIBUTORS.md) for their support of the Armbian/OpenWrt systems. This project directly inherited and used the resources and technical solutions of these projects during the adaptation process for FnNAS. Thank you all for your contributions and sharing, allowing us to use the FnNAS system on more boxes.
+首先感谢 [coolsnowwolf](https://github.com/coolsnowwolf/lede) 和 [unifreq](https://github.com/unifreq/openwrt_packit) 等大佬对本项目适配 FnNAS 提供的技术指导，同时感谢众多 [贡献者](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/CONTRIBUTORS.md) 对 Armbian/OpenWrt 系统提供的支持，这个项目在适配 FnNAS 的过程中直接继承和使用了这些项目的资源和技术方案。感谢各位的贡献和分享，让我们可以在更多盒子里使用 FnNAS 系统。
 
-The [u-boot](https://github.com/ophub/u-boot), [kernel](https://github.com/ophub/kernel) and [firmware](https://github.com/ophub/firmware) resources used in this system are mainly copied from the [unifreq/openwrt_packit](https://github.com/unifreq/openwrt_packit) project. Some files are provided and shared by users in [Pull](https://github.com/ophub/fnnas/pulls) and [Issues](https://github.com/ophub/fnnas/issues) of projects like [amlogic-s9xxx-armbian](https://github.com/ophub/amlogic-s9xxx-armbian) / [amlogic-s9xxx-openwrt](https://github.com/ophub/amlogic-s9xxx-openwrt) / [fnnas](https://github.com/ophub/fnnas) / [luci-app-amlogic](https://github.com/ophub/luci-app-amlogic) / [kernel](https://github.com/ophub/kernel) / [u-boot](https://github.com/ophub/u-boot). To thank these pioneers and sharers, I have recorded them uniformly in [CONTRIBUTORS.md](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/CONTRIBUTORS.md). Thank you again for giving new life and meaning to the boxes.
+本系统所使用的 [u-boot](https://github.com/ophub/u-boot), [kernel](https://github.com/ophub/kernel) 和 [firmware](https://github.com/ophub/firmware) 等资源主要从 [unifreq/openwrt_packit](https://github.com/unifreq/openwrt_packit) 的项目中复制而来，部分文件由用户在 [amlogic-s9xxx-armbian](https://github.com/ophub/amlogic-s9xxx-armbian) / [amlogic-s9xxx-openwrt](https://github.com/ophub/amlogic-s9xxx-openwrt) / [fnnas](https://github.com/ophub/fnnas) / [luci-app-amlogic](https://github.com/ophub/luci-app-amlogic) / [kernel](https://github.com/ophub/kernel) / [u-boot](https://github.com/ophub/u-boot) 等项目的 [Pull](https://github.com/ophub/fnnas/pulls) 和 [Issues](https://github.com/ophub/fnnas/issues) 中提供分享。为感谢这些开拓者和分享者，我统一在 [CONTRIBUTORS.md](https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/CONTRIBUTORS.md) 中进行了记录。再次感谢大家为盒子赋予了新的生命和意义。
 
-## Other Distributions
+## 其他发行版
 
-- The [amlogic-s9xxx-armbian](https://github.com/ophub/amlogic-s9xxx-armbian) project provides the `Armbian` system for use in boxes, which is also applicable to relevant devices supporting FnNAS.
-- The [amlogic-s9xxx-openwrt](https://github.com/ophub/amlogic-s9xxx-openwrt) project provides the `OpenWrt` system for use in boxes, which is also applicable to relevant devices supporting FnNAS.
-- [unifreq](https://github.com/unifreq) has created `OpenWrt` systems for more boxes such as Amlogic, Rockchip, and Allwinner. It is a benchmark in the TV box community and is recommended for use.
-- [cooip-jm](https://github.com/cooip-jm) shared many usage methods for applications like Armbian, OpenWrt, lxc, docker, AdGuard, etc., in his [wiki](https://github.com/cooip-jm/About-openwrt/wiki), which is recommended for learning.
+- [amlogic-s9xxx-armbian](https://github.com/ophub/amlogic-s9xxx-armbian) 项目提供了在盒子中使用的 `Armbian` 系统，在支持 FnNAS 的相关设备中同样适用。
+- [amlogic-s9xxx-openwrt](https://github.com/ophub/amlogic-s9xxx-openwrt) 项目提供了在盒子中使用的 `OpenWrt` 系统，在支持 FnNAS 的相关设备中同样适用。
+- [unifreq](https://github.com/unifreq/openwrt_packit) 为晶晨、瑞芯微和全志等更多盒子制作了 `OpenWrt` 系统，属于盒子圈的标杆，推荐使用。
+- [cooip-jm](https://github.com/cooip-jm) 在他的 [wiki](https://github.com/cooip-jm/About-openwrt/wiki) 里分享了很多 Armbian，OpenWrt，lxc，docker，AdGuard 等应用的使用方法，推荐学习。
 
-## Links
+## 链接
 
 - [fnnas.com](https://fnnas.com)
 - [unifreq](https://github.com/unifreq)
