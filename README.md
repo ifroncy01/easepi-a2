@@ -1,8 +1,8 @@
 # 为EasePi-A2 打包fnnas镜像，来自：htts://github.com/ophub/fnnas
-### fnos 镜像构建 ###
+## fnos 镜像构建 ##
 sudo ./renas -b easepi-a2 -k 6.12.y -s 256/3000 -e 17
 ## 在ubuntu中刷写飞牛固件
-### 安装rkdeveloptool ###
+## 安装rkdeveloptool ###
 git https://github.com/rockchip-linux/rkdeveloptool.git
 cd rkdeveloptool
 默认情况下普通用户无法访问 RK 设备，需添加 udev 规则：
@@ -18,14 +18,14 @@ sudo udevadm trigger
 验证安装是否成功 看版本，能输出版本号即成功
 rkdeveloptool -v
 
-# EasePi-A2 进入ROM模式
+## EasePi-A2 进入ROM模式
 检测设备（先将 RK35xx 设备进入 Maskrom/Loader 模式，再执行）
 rkdeveloptool ld
 rkdeveloptool db MiniLoaderAll.bin  //先加载加载器（RK35xx 专用 MiniLoader）
 rkdeveloptool wl 0 your/fnnas.img   //从 0 地址开始刷写飞牛镜像
 rkdeveloptool rd                    //刷写完成后重启设备
 
-# 刷写其他文件的方法：
+## 刷写其他文件的方法：
 ## 使用rkdeveloptool刷写u-boot-rockchip.bin
 rkdeveloptool wl 0x40000 u-boot-rockchip.bin
 # 在linux系统内刷写 u-boot-rockchip.bin
