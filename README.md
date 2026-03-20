@@ -56,7 +56,7 @@ EasePi A2 是一款基于 Rockchip RK3568B2 芯片的高性能 NAS/软路由设�
 
 2. **克隆仓库**：
    ```bash
-   git clone https://github.com/yourusername/easepi-a2.git
+   git clone https://github.com/ifroncy01/easepi-a2.git
    cd easepi-a2
    ```
 
