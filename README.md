@@ -26,7 +26,10 @@ rkdeveloptool wl 0 your/fnnas.img   //从 0 地址开始刷写飞牛镜像
 rkdeveloptool rd                    //刷写完成后重启设备
 
 # 刷写其他文件的方法：
+## 使用rkdeveloptool刷写u-boot-rockchip.bin
 rkdeveloptool wl 0x40000 u-boot-rockchip.bin
+# 在linux系统内刷写 u-boot-rockchip.bin
 dd if=u-boot-rockchip.bin of=/dev/mmcblk0p1 bs=32k seek=1 conv=notrunc status=none
+## 自定义镜像，向镜像内刷写uboot固件
 dd if=idbloader.img of=飞牛镜像包名 conv=fsync,notrunc bs=512 seek=64
 dd if=u-boot.itb of=飞牛镜像包名 conv=fsync,notrunc bs=512 seek=16384
