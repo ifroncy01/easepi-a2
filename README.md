@@ -32,9 +32,9 @@ Ubuntu 系统，已安装基础编译依赖
 
 ```Bash
 
-# 克隆源码（官方仓库）
-git clone https://github.com/ophub/fnnas.git
-cd fnnas
+# 克隆源码（本项目仓库）
+git clone https://github.com/ifroncy01/easepi-a2.git
+cd easepi-a2
 
 # 为 EasePi-A2 构建固件
 sudo ./renas -b easepi-a2 -k 6.12.y -s 256/3000 -e 17
@@ -206,4 +206,3 @@ dd if=u-boot.itb of=fnnas-x.x.x-easepi-a2.img conv=fsync,notrunc bs=512 seek=163
 - 设备平台：Rockchip RK35xx
 
 ---
-
