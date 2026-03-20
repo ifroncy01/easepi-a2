@@ -18,17 +18,16 @@
      
 - 2.通信协议 ： NEC协议 （Rockchip remotectl-pwm驱动默认协议）；
   
-- 3. 驱动类型 ：基于PWM的红外接收器驱动（rockchip,remotectl-pwm）
+- 3.驱动类型 ：基于PWM的红外接收器驱动（rockchip,remotectl-pwm）
 
-- 4.PWM通道 ：PWM3（remote_pwm_id = <0x03>）；配备 128×64 单色 OLED 显示屏（I2C 3.3V 接口 显示黑底白字）- OLED型号：SSD1306  分辨率：128x64 通信协议：I2C  I2C地址：0x3C  I2C总线：
-
-- 3.可实时显示设备状态、网络信息等关键数据；设置1个实体按键实现开关机和固件升级功能（ Key1 开关机键与 Key2 Mask ROM 键，双绿色 POW/RUN LED 指示灯，直观反馈设备运行状态；提供 2 路 GPIO 控制的 FAN POWER 风扇接口（实际没有使用）。
+- 4.PWM通道 ：PWM3（remote_pwm_id = <0x03>）；配备 128×64 单色 OLED 显示屏（I2C 3.3V 接口 显示黑底白字）- OLED型号：SSD1306  分辨率：128x64 通信协议：I2C  I2C地址：0x3C  I2C总线：可实时显示设备状态、网络信息等关键数据；
+- 设置1个实体按键实现开关机和固件升级功能（ Key1 开关机键与 Key2 Mask ROM 键，双绿色 POW/RUN LED 指示灯，直观反馈设备运行状态；提供 2 路 GPIO 控制的 FAN POWER 风扇接口（实际没有使用）。
   
   电源管理：采用瑞芯微 RK809-5 PMIC 电源管理芯片，集成 5 路同步降压输出、9 路 LDO 输出，同时内置音频解码器、扬声器功放与电池电量计，实现高效供电与音频控制；搭配汤诚 TCS4525、矽力杰 SY8205/SY8009A 三款同步降压芯片，分别负责不同电压域的供电，支持宽电压输入与精准电压调节，保障各硬件模块供电稳定。
 
   时钟与封装：搭载达尔 PI6C557-05BLE 扩频时钟发生器，满足 PCIe3.0 与以太网的时钟需求；处理器采用 FCCSP636L 封装，各芯片分别采用 QFN、BGA、TSSOP 等封装形式，保障硬件集成度与稳定性；整机采用 135×115×28mm 钣金折弯金属外壳，静电喷塑工艺，兼顾散热与防护，适配桌面部署场景。
   
-  EasePi A2 红外接收模块配置
+  EasePi A2 红外接收模块配置：
 - **驱动类型**：rockchip,remotectl-pwm
 - **PWM通道**：PWM3 (remote_pwm_id = <0x03>)
 - **GPIO引脚**：GPIO0_18
